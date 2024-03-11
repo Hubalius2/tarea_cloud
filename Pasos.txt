@@ -1,0 +1,21 @@
+1 Crear base de datos en RDS tipo PostgreSQL.
+    Conectar base de datos con DBeaver e introducir datos para visualizar.
+    Datos -> base de datos sobre coches:
+        - Id
+        - Marca
+        - Modelo
+        - Version
+        - Precio
+    Los datos se introducen desde un archivo CSV.
+
+2. Crear funciones lamba para recoger los datos a visualizar.
+    - Top 10 marcas mas vendidas.
+    - Top 5 marcas mas caras (precio medio).
+    - Top 5 coches mas caros.
+    - Top 5 coches mas baratos.
+
+3. Diseñar Frontend en local.
+
+4. Desplegar frontend en docker local.
+
+5. Desplegar frontend en AWS.

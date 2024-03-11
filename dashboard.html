@@ -1,0 +1,386 @@
+<html>
+
+<head>
+  <title>Car Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="bg-white">
+    <!-- Header -->
+    <header class="absolute inset-x-0 top-0 z-50">
+      <nav class="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+        <div class="flex lg:flex-1">
+          <a href="index.html" class="-m-1.5 p-1.5">
+            <span class="sr-only">Your Company</span>
+            <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="">
+          </a>
+        </div>
+        <div class="flex lg:hidden">
+          <button type="button" class="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700">
+            <span class="sr-only">Open main menu</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+              aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            </svg>
+          </button>
+        </div>
+      </nav>
+      <!-- Mobile menu, show/hide based on menu open state. -->
+      <div class="lg:hidden" role="dialog" aria-modal="true">
+        <!-- Background backdrop, show/hide based on slide-over state. -->
+        <div class="fixed inset-0 z-50"></div>
+        <div
+          class="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <div class="flex items-center justify-between">
+            <a href="#" class="-m-1.5 p-1.5">
+              <span class="sr-only">Your Company</span>
+              <img class="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="">
+            </a>
+            <button type="button" class="-m-2.5 rounded-md p-2.5 text-gray-700">
+              <span class="sr-only">Close menu</span>
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div class="mt-6 flow-root">
+            <div class="-my-6 divide-y divide-gray-500/10">
+              <div class="space-y-2 py-6">
+                <a href="#"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Product</a>
+                <a href="#"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Features</a>
+                <a href="#"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Marketplace</a>
+                <a href="#"
+                  class="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Company</a>
+              </div>
+              <div class="py-6">
+                <a href="#"
+                  class="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50">Log
+                  in</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="isolate">
+      <div class="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
+        <div class="mx-auto max-w-2xl lg:text-center">
+          <h1 class="text-4xl font-semibold leading-7 text-indigo-600 text-center">Dashboard</h1>
+        </div>
+      </div>
+
+
+      <div class="container mx-auto mt-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Primera fila -->
+          <div class="border rounded-lg p-4 mx-2">
+            <!-- Aquí irá tu primer gráfico -->
+
+            <canvas id="polarAreaChart"></canvas>
+          </div>
+          <div class="border rounded-lg p-4 mx-2">
+            <!-- Aquí irá tu segundo gráfico -->
+            <canvas id="horizontalBarChart"></canvas>
+
+
+          </div>
+          <!-- Segunda fila -->
+          <div class="border rounded-lg p-4 mx-2">
+            <!-- Aquí irá tu tercer gráfico -->
+            <canvas id="barChart"></canvas>
+          </div>
+          <div class="border rounded-lg p-4 mx-2">
+            <!-- Aquí irá tu cuarto gráfico -->
+            <canvas id="pieChart" style="height: 150; width: 150;"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <select id="carsDropdown"
+        class="block w-full px-4 py-2 mt-1 mb-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+
+    </main>
+
+
+
+  </div>
+
+</body>
+
+
+<script>
+  // Función para obtener los datos JSON desde un enlace
+  async function getTopFiveBrands() {
+    const response = await fetch('https://h77v0f7om6.execute-api.us-east-1.amazonaws.com/dev/cars/top5_brands');
+    const data = await response.json();
+    return data;
+  }
+
+  async function getTopFiveCars() {
+    const response = await fetch('https://h77v0f7om6.execute-api.us-east-1.amazonaws.com/dev/cars/top_expensive');
+    const data = await response.json();
+    return data;
+  }
+
+  async function getBottonFiveBrands() {
+    const response = await fetch('https://h77v0f7om6.execute-api.us-east-1.amazonaws.com/dev/cars/top5_cheapest');
+    const data = await response.json();
+    return data;
+  }
+
+  async function getTop10Brands() {
+    const response = await fetch('https://h77v0f7om6.execute-api.us-east-1.amazonaws.com/dev/cars/most_sold_brands');
+    const data = await response.json();
+    return data;
+  }
+  // Función para crear el gráfico de pastel
+  async function createPieChart() {
+    const jscn = await getTopFiveBrands(); // Obtiene los datos JSON desde el enlace
+    const data = JSON.parse(jscn.data);
+    // Configuración del gráfico
+    const config = {
+      type: 'pie',
+      data: {
+        labels: data.map(item => item.make),
+        datasets: [{
+          label: 'Precio Medio',
+          data: data.map(item => item.precio_medio),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)',
+            'rgba(75, 192, 192, 0.2)',
+            'rgba(153, 102, 255, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Top 5 precios medios por Marca'
+          }
+        }
+      },
+    };
+
+    // Dibuja el gráfico en el lienzo
+    var myChart = new Chart(
+      document.getElementById('pieChart'),
+      config
+    );
+  }
+
+  async function createtopfiveexpensivechart() {
+    const jscnFEC = await getTopFiveCars(); // Obtiene los datos JSON desde el enlace
+    const dataFEC = JSON.parse(jscnFEC.data);
+
+    const carLabels = dataFEC.map(entry => entry.car);
+    const prices = dataFEC.map(entry => entry.price);
+
+    const config = {
+      type: 'polarArea',
+      data: {
+        labels: carLabels,
+        datasets: [{
+          label: 'Precio',
+          data: prices,
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Precio de los 5 coches mas caros'
+          }
+        }
+      }
+    };
+
+    // Dibujar el gráfico en el lienzo
+    var myChart = new Chart(
+      document.getElementById('polarAreaChart'),
+      config
+    );
+  }
+
+  async function createmostseldbrandschar() {
+    const jscnMSB = await getTop10Brands(); // Obtiene los datos JSON desde el enlace
+    const dataMSB = JSON.parse(jscnMSB.data);
+
+    const brands = dataMSB.map(entry => entry.make);
+    const ventas = dataMSB.map(entry => entry.total_ventas);
+
+
+    function getColor(value) {
+      if (value > 4100) return 'rgba(255, 99, 132, 0.5)';
+      if (value > 3400) return 'rgba(54, 162, 235, 0.5)';
+      if (value > 2300) return 'rgba(255, 206, 86, 0.5)';
+      if (value > 1000) return 'rgba(75, 192, 192, 0.5)';
+      return 'rgba(153, 102, 255, 0.5)';
+    }
+
+    // Obtener colores para cada valor de ventas
+    const backgroundColors = ventas.map(value => getColor(value));
+
+    // Configurar el gráfico
+    const config = {
+      type: 'bar',
+      data: {
+        labels: brands,
+        datasets: [{
+          label: 'Ventas Totales',
+          data: ventas,
+          backgroundColor: backgroundColors,
+          borderColor: backgroundColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Ventas Totales por Marca'
+          },
+          legend: {
+            display: false
+          }
+        }
+      }
+    };
+    // Dibujar el gráfico en el lienzo
+    var myChart = new Chart(
+      document.getElementById('barChart'),
+      config
+    );
+  }
+
+  async function createfivecheapestchart() {
+    const jscnFCC = await getBottonFiveBrands(); // Obtiene los datos JSON desde el enlace
+    const dataFCC = JSON.parse(jscnFCC.data);
+
+    const cars = dataFCC.map(entry => entry.car);
+    const prices = dataFCC.map(entry => entry.price);
+
+    const config = {
+      type: 'doughnut',
+      data: {
+        labels: cars,
+        datasets: [{
+          label: 'Precio',
+          data: prices,
+          backgroundColor: prices.map(price => {
+            if (price < 350) {
+              return 'rgba(75, 192, 192, 0.5)'; // Verde
+            } else if (price >= 350 && price < 400) {
+              return 'rgba(255, 206, 86, 0.5)'; // Amarillo
+            } else {
+              return 'rgba(255, 99, 132, 0.5)'; // Rojo
+            }
+          }),
+          borderColor: prices.map(price => {
+            if (price < 350) {
+              return 'rgba(75, 192, 192, 1)'; // Verde
+            } else if (price >= 350 && price < 400) {
+              return 'rgba(255, 206, 86, 1)'; // Amarillo
+            } else {
+              return 'rgba(255, 99, 132, 1)'; // Rojo
+            }
+          }),
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Precio de los 5 coches mas baratos'
+          }
+        }
+      }
+    };
+
+    // Dibujar el gráfico en el lienzo
+    var myChart = new Chart(
+      document.getElementById('horizontalBarChart'),
+      config
+    );
+  }
+
+  async function loadCheckboxesFromJSON(dropdownId) {
+
+    const jscn = await getTop10Brands(); // Obtiene los datos JSON desde el enlace
+    const data = JSON.parse(jscn.data);
+
+    const dropdown = document.getElementById(dropdownId);;
+    // Itera sobre los datos del JSON
+    data.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.make;
+      option.textContent = item.make;
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.name = 'cars';
+      checkbox.value = item.make;
+      checkbox.checked = item.checked;
+
+      option.appendChild(checkbox);
+      dropdown.appendChild(option);
+    });
+
+
+  }
+
+
+  createPieChart();
+  createtopfiveexpensivechart();
+  createmostseldbrandschar();
+  createfivecheapestchart();
+  loadCheckboxesFromJSON("carsDropdown");
+</script>
+
+
+</html>
